@@ -1,4 +1,10 @@
-import { createRoot } from "react-dom/client";
+import React from "react";
+import ReactDOM from "react-dom/client";
+import AppMain from "./AppMain";
+import "./index.css";
 
-const root = createRoot(document.body);
-root.render(<h2>Hello from React!</h2>);
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <AppMain />
+  </React.StrictMode>
+);
