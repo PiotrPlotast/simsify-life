@@ -4,7 +4,7 @@ import started from "electron-squirrel-startup";
 import installExtension, {
   REACT_DEVELOPER_TOOLS,
 } from "electron-devtools-installer";
-
+import db from "./db"; // Importing for side effects to initialize the database
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
   app.quit();
@@ -51,6 +51,7 @@ const addReactDevTools = () => {
 // Some APIs can only be used after this event occurs.
 app.on("ready", createWindow);
 app.on("ready", addReactDevTools);
+app.on("ready", () => console.log("db", db));
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
