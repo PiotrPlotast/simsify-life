@@ -23,7 +23,7 @@ const SKILLS = [
   {
     name: "Psychology",
     progress: 14,
-    level: 3,
+    level: 20,
     icon: "🧠",
   },
   {
@@ -32,12 +32,46 @@ const SKILLS = [
     level: 2,
     icon: "🍳",
   },
+  {
+    name: "Music",
+    progress: 100,
+    level: 1,
+    icon: "🎵",
+  },
+  {
+    name: "Robotics",
+    progress: 0,
+    level: 1,
+    icon: "🤖",
+  },
 ];
 
 export default function SkillList() {
   const [skillName, setSkillName] = useState("");
   const [icon, setIcon] = useState("");
   const [skills, setSkills] = useState(SKILLS);
+
+  function handleProgress(skill: string) {
+    const nextSkills = skills.map((s) => {
+      if (s.name === skill) {
+        s.progress += 2 / s.level;
+      }
+      return s;
+    });
+    setSkills(nextSkills);
+  }
+
+  function handleLvlUp(skillName: string) {
+    const nextSkills = skills.map((s) => {
+      if (s.name === skillName) {
+        s.level += 1;
+        s.progress = 0;
+      }
+      return s;
+    });
+    setSkills(nextSkills);
+  }
+
   function handleAddSkill() {
     setSkills([
       ...skills,
@@ -50,12 +84,8 @@ export default function SkillList() {
     ]);
   }
 
-  function handleDeleteSkill(skillName: string) {
-    setSkills(skills.filter((skill) => skill.name !== skillName));
-  }
-
   return (
-    <div className="w-full border border-red-500 flex flex-col justify-center items-center">
+    <div>
       <ul>
         {skills.map((skill, index) => (
           <Skill
@@ -64,6 +94,8 @@ export default function SkillList() {
             progress={skill.progress}
             level={skill.level}
             icon={skill.icon}
+            onHandleProgress={handleProgress}
+            onHandleLvlUp={handleLvlUp}
           />
         ))}
       </ul>
