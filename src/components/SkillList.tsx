@@ -1,55 +1,25 @@
 import Skill from "./Skill";
 import AddSkill from "./AddSkill";
-import { useState } from "react";
-const SKILLS = [
-  {
-    name: "Coding",
-    progress: 15,
-    level: 1,
-    icon: "💻",
-  },
-  {
-    name: "Chess",
-    progress: 88,
-    level: 1,
-    icon: "♟",
-  },
-  {
-    name: "Graphics",
-    progress: 69,
-    level: 1,
-    icon: "🎨",
-  },
-  {
-    name: "Psychology",
-    progress: 14,
-    level: 20,
-    icon: "🧠",
-  },
-  {
-    name: "Cooking",
-    progress: 50,
-    level: 2,
-    icon: "🍳",
-  },
-  {
-    name: "Music",
-    progress: 100,
-    level: 1,
-    icon: "🎵",
-  },
-  {
-    name: "Robotics",
-    progress: 0,
-    level: 1,
-    icon: "🤖",
-  },
-];
+import { useState, useEffect } from "react";
+import { ipcRenderer } from "electron";
+import db from "../db";
 
 export default function SkillList() {
   const [skillName, setSkillName] = useState("");
   const [icon, setIcon] = useState("");
-  const [skills, setSkills] = useState(SKILLS);
+  const [skills, setSkills] = useState([]);
+
+  useEffect(() => {
+    // Fetch skills from the database when the component mounts
+    window.Electron.ipcRenderer
+      .invoke("get-skills")
+      .then((rows) => {
+        setSkills(rows);
+      })
+      .catch((err) => {
+        console.error("Error querying data", err);
+      });
+  }, []);
 
   function handleProgress(skill: string) {
     const nextSkills = skills.map((s) => {
