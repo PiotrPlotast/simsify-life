@@ -8,7 +8,7 @@ const db = new sqlite3.Database("db.sqlite", (err) => {
   }
 });
 db.run(
-  "CREATE TABLE IF NOT EXISTS data (id INTEGER PRIMARY KEY, name TEXT, icon TEXT, level INTEGER, progress INTEGER)",
+  "CREATE TABLE IF NOT EXISTS skills (id INTEGER PRIMARY KEY, name TEXT, icon TEXT, level INTEGER, progress INTEGER)",
   (err) => {
     if (err) {
       console.error("Error creating table", err);
