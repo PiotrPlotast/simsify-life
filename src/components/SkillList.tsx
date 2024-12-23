@@ -1,9 +1,6 @@
 import Skill from "./Skill";
 import AddSkill from "./AddSkill";
 import { useState, useEffect } from "react";
-import { ipcRenderer } from "electron";
-import db from "../db";
-
 export default function SkillList() {
   const [skillName, setSkillName] = useState("");
   const [icon, setIcon] = useState("");
@@ -21,14 +18,20 @@ export default function SkillList() {
       });
   }, []);
 
-  function handleProgress(skill: string) {
+  function handleProgress(skillName: string) {
     const nextSkills = skills.map((s) => {
-      if (s.name === skill) {
+      if (s.name === skillName) {
         s.progress += 2 / s.level;
       }
       return s;
     });
     setSkills(nextSkills);
+    window.Electron.ipcRenderer
+      .invoke("progress", skillName)
+      .then(() => console.log(skills))
+      .catch((err) => {
+        console.error("Error querying data", err);
+      });
   }
 
   function handleLvlUp(skillName: string) {
@@ -40,6 +43,12 @@ export default function SkillList() {
       return s;
     });
     setSkills(nextSkills);
+    window.Electron.ipcRenderer
+      .invoke("lvl-up", skillName)
+      .then(() => console.log("Skill leveled up"))
+      .catch((err) => {
+        console.error("Error querying data", err);
+      });
   }
 
   function handleAddSkill() {
@@ -52,6 +61,13 @@ export default function SkillList() {
         icon: icon,
       },
     ]);
+    console.log("Adding skill", skillName, icon);
+    window.Electron.ipcRenderer
+      .invoke("add-skill", skillName, icon)
+      .then(() => console.log("Skill added to db"))
+      .catch((err) => {
+        console.error("Error querying data", err);
+      });
   }
 
   return (
