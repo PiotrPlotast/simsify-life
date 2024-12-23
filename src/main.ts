@@ -90,5 +90,63 @@ ipcMain.handle("get-skills", async () => {
   });
 });
 
+ipcMain.handle("add-skill", async (event, skillName, icon) => {
+  return new Promise((resolve, reject) => {
+    db.run(
+      "INSERT INTO skills (name, progress, level, icon) VALUES (?, 0, 1, ?)",
+      [skillName, icon],
+      (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(void 0);
+        }
+      }
+    );
+  });
+});
+
+ipcMain.handle("lvl-up", async (event, skillName) => {
+  return new Promise((resolve, reject) => {
+    db.run(
+      "UPDATE skills SET level = level + 1, progress = 0 WHERE name = ?",
+      [skillName],
+      (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(void 0);
+        }
+      }
+    );
+  });
+});
+
+ipcMain.handle("progress", async (event, skillName) => {
+  return new Promise((resolve, reject) => {
+    db.serialize(() => {
+      db.run("BEGIN TRANSACTION");
+      db.run(
+        "UPDATE skills SET progress = progress + (2 / level) WHERE name = ?",
+        [skillName],
+        (err) => {
+          if (err) {
+            db.run("ROLLBACK");
+            reject(err);
+          } else {
+            db.run("COMMIT", (commitErr) => {
+              if (commitErr) {
+                reject(commitErr);
+              } else {
+                resolve(void 0);
+              }
+            });
+          }
+        }
+      );
+    });
+  });
+});
+
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
