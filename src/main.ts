@@ -59,7 +59,6 @@ const addReactDevTools = () => {
 // Some APIs can only be used after this event occurs.
 app.on("ready", createWindow);
 app.on("ready", addReactDevTools);
-app.on("ready", () => console.log("db", db));
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
@@ -93,7 +92,7 @@ ipcMain.handle("get-skills", async () => {
 ipcMain.handle("add-skill", async (event, skillName, icon) => {
   return new Promise((resolve, reject) => {
     db.run(
-      "INSERT INTO skills (name, progress, level, icon) VALUES (?, 0, 1, ?)",
+      "INSERT INTO skills (name, time, icon) VALUES (?, 0, ?)",
       [skillName, icon],
       (err) => {
         if (err) {
@@ -106,44 +105,130 @@ ipcMain.handle("add-skill", async (event, skillName, icon) => {
   });
 });
 
-ipcMain.handle("lvl-up", async (event, skillName) => {
+ipcMain.handle("skill-time", async (event, skillNames) => {
+  if (!Array.isArray(skillNames)) {
+    return Promise.reject(new TypeError("skillNames must be an array"));
+  }
+
   return new Promise((resolve, reject) => {
-    db.run(
-      "UPDATE skills SET level = level + 1, progress = 0 WHERE name = ?",
-      [skillName],
-      (err) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(void 0);
+    db.serialize(() => {
+      db.run("BEGIN TRANSACTION", (beginErr) => {
+        if (beginErr) {
+          if (
+            beginErr.message.includes(
+              "cannot start a transaction within a transaction"
+            )
+          ) {
+            // If a transaction is already in progress, just update the skills
+            const placeholders = skillNames.map(() => "?").join(",");
+            db.run(
+              `UPDATE skills SET time = time + 1 WHERE name IN (${placeholders})`,
+              skillNames,
+              (updateErr) => {
+                if (updateErr) {
+                  reject(updateErr);
+                } else {
+                  resolve(void 0);
+                }
+              }
+            );
+          } else {
+            reject(beginErr);
+          }
+          return;
         }
-      }
-    );
+
+        const placeholders = skillNames.map(() => "?").join(",");
+        db.run(
+          `UPDATE skills SET time = time + 1 WHERE name IN (${placeholders})`,
+          skillNames,
+          (updateErr) => {
+            if (updateErr) {
+              db.run("ROLLBACK", (rollbackErr) => {
+                if (rollbackErr) {
+                  console.error("Error rolling back transaction:", rollbackErr);
+                }
+                reject(updateErr);
+              });
+            } else {
+              db.run("COMMIT", (commitErr) => {
+                if (commitErr) {
+                  reject(commitErr);
+                } else {
+                  resolve(void 0);
+                }
+              });
+            }
+          }
+        );
+      });
+    });
   });
 });
 
-ipcMain.handle("progress", async (event, skillName) => {
+ipcMain.handle("get-total-time", async () => {
+  return new Promise((resolve, reject) => {
+    db.get("SELECT total_time FROM dashboard_data", [], (err, row) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(row);
+      }
+    });
+  });
+});
+
+ipcMain.handle("set-total-time", async (event, totalTime) => {
   return new Promise((resolve, reject) => {
     db.serialize(() => {
-      db.run("BEGIN TRANSACTION");
-      db.run(
-        "UPDATE skills SET progress = progress + (2 / level) WHERE name = ?",
-        [skillName],
-        (err) => {
-          if (err) {
-            db.run("ROLLBACK");
-            reject(err);
-          } else {
-            db.run("COMMIT", (commitErr) => {
-              if (commitErr) {
-                reject(commitErr);
-              } else {
-                resolve(void 0);
+      db.run("BEGIN TRANSACTION", (beginErr) => {
+        if (beginErr) {
+          if (
+            beginErr.message.includes(
+              "cannot start a transaction within a transaction"
+            )
+          ) {
+            // If a transaction is already in progress, just update the total_time
+            db.run(
+              "UPDATE dashboard_data SET total_time = ?",
+              [totalTime],
+              (updateErr) => {
+                if (updateErr) {
+                  reject(updateErr);
+                } else {
+                  resolve(void 0);
+                }
               }
-            });
+            );
+          } else {
+            reject(beginErr);
           }
+          return;
         }
-      );
+
+        db.run(
+          "UPDATE dashboard_data SET total_time = ?",
+          [totalTime],
+          (updateErr) => {
+            if (updateErr) {
+              db.run("ROLLBACK", (rollbackErr) => {
+                if (rollbackErr) {
+                  console.error("Error rolling back transaction:", rollbackErr);
+                }
+                reject(updateErr);
+              });
+            } else {
+              db.run("COMMIT", (commitErr) => {
+                if (commitErr) {
+                  reject(commitErr);
+                } else {
+                  resolve(void 0);
+                }
+              });
+            }
+          }
+        );
+      });
     });
   });
 });
