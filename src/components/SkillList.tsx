@@ -1,7 +1,11 @@
 import Skill from "./Skill";
 import AddSkill from "./AddSkill";
 import { useState, useEffect } from "react";
-export default function SkillList() {
+export default function SkillList({
+  onSetTotalTime,
+}: {
+  onSetTotalTime: () => void;
+}) {
   const [skillName, setSkillName] = useState("");
   const [icon, setIcon] = useState("");
   const [skills, setSkills] = useState([]);
@@ -21,31 +25,15 @@ export default function SkillList() {
   function handleProgress(skillName: string) {
     const nextSkills = skills.map((s) => {
       if (s.name === skillName) {
-        s.progress += 2 / s.level;
+        s.time += 1;
       }
       return s;
     });
     setSkills(nextSkills);
+    onSetTotalTime();
     window.Electron.ipcRenderer
-      .invoke("progress", skillName)
+      .invoke("skill-time", [skillName])
       .then(() => console.log(skills))
-      .catch((err) => {
-        console.error("Error querying data", err);
-      });
-  }
-
-  function handleLvlUp(skillName: string) {
-    const nextSkills = skills.map((s) => {
-      if (s.name === skillName) {
-        s.level += 1;
-        s.progress = 0;
-      }
-      return s;
-    });
-    setSkills(nextSkills);
-    window.Electron.ipcRenderer
-      .invoke("lvl-up", skillName)
-      .then(() => console.log("Skill leveled up"))
       .catch((err) => {
         console.error("Error querying data", err);
       });
@@ -56,8 +44,7 @@ export default function SkillList() {
       ...skills,
       {
         name: skillName,
-        progress: 0,
-        level: 1,
+        time: 0,
         icon: icon,
       },
     ]);
@@ -77,11 +64,10 @@ export default function SkillList() {
           <Skill
             key={index}
             skillName={skill.name}
-            progress={skill.progress}
+            time={skill.time}
             level={skill.level}
             icon={skill.icon}
             onHandleProgress={handleProgress}
-            onHandleLvlUp={handleLvlUp}
           />
         ))}
       </ul>
