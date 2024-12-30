@@ -15,8 +15,21 @@ const createWindow = () => {
   const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
+    maxHeight: 700,
+    maxWidth: 1000,
     minWidth: 600,
     minHeight: 600,
+    title: "Skill Time Tracker",
+    titleBarStyle: "hidden",
+    ...(process.platform !== "darwin"
+      ? {
+          titleBarOverlay: {
+            color: "#2f3241",
+            symbolColor: "#74b1be",
+            height: 30,
+          },
+        }
+      : {}),
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,

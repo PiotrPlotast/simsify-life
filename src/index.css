@@ -8,3 +8,17 @@ body {
   margin: auto;
   max-width: 38rem;
 }
+body {
+  margin: 0;
+}
+.titlebar {
+  height: 30px;
+  background: #2f3241;
+  color: #74b1be;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  app-region: drag;
+  position: fixed;
+}
