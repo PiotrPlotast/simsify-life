@@ -29,4 +29,21 @@ db.run(
     }
   }
 );
+db.run(
+  "CREATE TABLE IF NOT EXISTS user_preferences (id INTEGER PRIMARY KEY, notifications INTEGER, dark_mode INTEGER)",
+  (err) => {
+    if (err) {
+      console.error("Error creating table", err);
+    } else {
+      db.run(
+        "INSERT INTO user_preferences (id INTEGER PRIMARY KEY, notifications INTEGER, dark_mode INTEGER) VALUES (0, 1, 0)",
+        (err) => {
+          if (err) {
+            console.error("Error inserting initial data", err);
+          }
+        }
+      );
+    }
+  }
+);
 export default db;
