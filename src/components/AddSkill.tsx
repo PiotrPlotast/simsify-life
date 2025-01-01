@@ -30,7 +30,12 @@ const AddSkill: React.FC<AddSkillProps> = ({
   return (
     <div>
       {!addSkill ? (
-        <button onClick={() => setAddSkill(!addSkill)}>Add Skill</button>
+        <button
+          className="border border-blue-500 px-4 py-2"
+          onClick={() => setAddSkill(!addSkill)}
+        >
+          Add Skill
+        </button>
       ) : (
         <form>
           <input
@@ -47,8 +52,18 @@ const AddSkill: React.FC<AddSkillProps> = ({
             <option value="🧠">🧠</option>
             <option value="🍳">🍳</option>
           </select>
-          <button onClick={() => setAddSkill(!addSkill)}>Cancel</button>
-          <button onClick={(e) => addSkillHandler(e)}>Add</button>
+          <button
+            className="border border-blue-500 px-4 py-2"
+            onClick={(e) => addSkillHandler(e)}
+          >
+            Add
+          </button>
+          <button
+            className="border border-blue-500 px-4 py-2"
+            onClick={() => setAddSkill(!addSkill)}
+          >
+            Cancel
+          </button>
         </form>
       )}
     </div>

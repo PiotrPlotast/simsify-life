@@ -6,6 +6,19 @@ function App() {
   const [totalTime, setTotalTime] = useState(0);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(0);
+  const [totalSeconds, setTotalSeconds] = useState(0);
+  const [totalMinutes, setTotalMinutes] = useState(0);
+  const [totalHours, setTotalHours] = useState(0);
+
+  useEffect(() => {
+    const hours = Math.floor(totalTime / 3600);
+    const minutes = Math.floor((totalTime % 3600) / 60);
+    const seconds = Math.floor(totalTime % 60);
+
+    setTotalHours(hours);
+    setTotalMinutes(minutes);
+    setTotalSeconds(seconds);
+  }, [totalTime]);
 
   useEffect(() => {
     window.Electron.ipcRenderer
@@ -55,7 +68,11 @@ function App() {
   return (
     <div className="h-[100dvh] w-[100dvw] flex flex-col items-center pt-8">
       <h1 className="text-2xl font-bold">Skills Time Tracker</h1>
-      <Dashboard totalTime={totalTime} />
+      <Dashboard
+        totalHours={totalHours}
+        totalMinutes={totalMinutes}
+        totalSeconds={totalSeconds}
+      />
       <SkillList onSetTotalTime={handleSetTotalTime} />
       <SettingsPopUp
         onSetHandleDarkMode={handleSetDarkMode}

@@ -16,7 +16,19 @@ export default function Skill({
   onHandleProgress,
 }: SkillProps) {
   const [isStarted, setIsStarted] = useState(false);
+  const [totalSeconds, setTotalSeconds] = useState(0);
+  const [totalMinutes, setTotalMinutes] = useState(0);
+  const [totalHours, setTotalHours] = useState(0);
 
+  useEffect(() => {
+    const hours = Math.floor(time / 3600);
+    const minutes = Math.floor((time % 3600) / 60);
+    const seconds = Math.floor(time % 60);
+
+    setTotalHours(hours);
+    setTotalMinutes(minutes);
+    setTotalSeconds(seconds);
+  }, [time]);
   function handleProgress() {
     setIsStarted(!isStarted);
   }
@@ -41,12 +53,16 @@ export default function Skill({
   }, [isStarted, onHandleProgress, skillName]);
 
   return (
-    <div className="flex w-48">
+    <div className="flex space-x-4 border p-4 rounded-lg">
       <h2>{icon}</h2>
-      <h2>{skillName}</h2>
-      <h2>{time}</h2>
+      <h2 className="px-4">{skillName}</h2>
+      <h2>
+        {totalHours}:{totalMinutes}:{totalSeconds}
+      </h2>
       <h2>{level}</h2>
-      <button onClick={handleProgress}>{isStarted ? "Stop" : "Start"}</button>
+      <button className="self-end" onClick={handleProgress}>
+        {isStarted ? "Stop" : "Start"}
+      </button>
     </div>
   );
 }
