@@ -36,7 +36,7 @@ db.run(
       console.error("Error creating table", err);
     } else {
       db.run(
-        "INSERT INTO user_preferences (id INTEGER PRIMARY KEY, notifications INTEGER, dark_mode INTEGER) VALUES (0, 1, 0)",
+        "INSERT INTO user_preferences (notifications, dark_mode) VALUES (1, 0)",
         (err) => {
           if (err) {
             console.error("Error inserting initial data", err);
