@@ -9,7 +9,7 @@ export default function Dashboard({ totalTime }: { totalTime: number }) {
       const newQoute =
         quotes.quotes[Math.floor(Math.random() * quotes.quotes.length)];
       setRandomQuote(newQoute.quote);
-    }, 5000);
+    }, 30000);
 
     return () => clearInterval(intervalId);
   }, []);
