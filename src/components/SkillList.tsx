@@ -33,7 +33,6 @@ export default function SkillList({
     onSetTotalTime();
     window.Electron.ipcRenderer
       .invoke("skill-time", [skillName])
-      .then(() => console.log(skills))
       .catch((err) => {
         console.error("Error querying data", err);
       });
@@ -51,7 +50,6 @@ export default function SkillList({
     console.log("Adding skill", skillName, icon);
     window.Electron.ipcRenderer
       .invoke("add-skill", skillName, icon)
-      .then(() => console.log("Skill added to db"))
       .catch((err) => {
         console.error("Error querying data", err);
       });
