@@ -246,5 +246,29 @@ ipcMain.handle("set-total-time", async (event, totalTime) => {
   });
 });
 
+ipcMain.handle("get-dark-mode", async () => {
+  return new Promise((resolve, reject) => {
+    db.get("SELECT dark_mode FROM user_preferences", [], (err, row) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(row);
+      }
+    });
+  });
+});
+
+ipcMain.handle("set-dark-mode", async (event, darkMode) => {
+  return new Promise((resolve, reject) => {
+    db.run("UPDATE user_preferences SET dark_mode = ?", [darkMode], (err) => {
+      if (err) {
+        reject(err);
+      } else {
+        console.log("Dark mode set to", darkMode);
+        resolve(void 0);
+      }
+    });
+  });
+});
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
