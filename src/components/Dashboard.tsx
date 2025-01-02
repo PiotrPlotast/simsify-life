@@ -26,7 +26,9 @@ export default function Dashboard({
   return (
     <div>
       <h2>
-        Time spent tracking your skills: {totalHours}:{totalMinutes}:
+        Time spent tracking your skills: {totalHours < 10 ? "0" : ""}
+        {totalHours}:{totalMinutes < 10 ? "0" : ""}
+        {totalMinutes}:{totalSeconds < 10 ? "0" : ""}
         {totalSeconds}
       </h2>
       <h3>Charts</h3>
