@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from "react";
 
 interface SkillProps {
   skillName: string;
-  level: number;
   time: number;
   icon: string;
   onHandleProgress: (skill: string) => void;
@@ -10,7 +9,6 @@ interface SkillProps {
 
 export default function Skill({
   skillName,
-  level,
   time,
   icon,
   onHandleProgress,
@@ -62,7 +60,6 @@ export default function Skill({
         {totalMinutes}:{totalSeconds < 10 ? "0" : ""}
         {totalSeconds}
       </h2>
-      <h2>{level}</h2>
       <button className="self-end" onClick={handleProgress}>
         {isStarted ? "Stop" : "Start"}
       </button>

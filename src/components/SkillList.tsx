@@ -63,7 +63,6 @@ export default function SkillList({
             key={index}
             skillName={skill.name}
             time={skill.time}
-            level={skill.level}
             icon={skill.icon}
             onHandleProgress={handleProgress}
           />
