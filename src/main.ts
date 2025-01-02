@@ -264,7 +264,6 @@ ipcMain.handle("set-dark-mode", async (event, darkMode) => {
       if (err) {
         reject(err);
       } else {
-        console.log("Dark mode set to", darkMode);
         resolve(void 0);
       }
     });
