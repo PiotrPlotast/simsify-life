@@ -57,7 +57,10 @@ export default function Skill({
       <h2>{icon}</h2>
       <h2 className="px-4">{skillName}</h2>
       <h2>
-        {totalHours}:{totalMinutes}:{totalSeconds}
+        {totalHours < 10 ? "0" : ""}
+        {totalHours}:{totalMinutes < 10 ? "0" : ""}
+        {totalMinutes}:{totalSeconds < 10 ? "0" : ""}
+        {totalSeconds}
       </h2>
       <h2>{level}</h2>
       <button className="self-end" onClick={handleProgress}>
